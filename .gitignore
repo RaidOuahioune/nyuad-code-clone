@@ -1,0 +1,12 @@
+
+
+*.pkl
+*.bin
+*.pyc
+preparation.py
+
+*.pth
+__pycache__/
+*.txt
+
+*.csv
