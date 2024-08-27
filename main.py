@@ -39,9 +39,9 @@ def process_single_snippet(snippet, is_clone):
     
     # Choose the correct CSV path based on whether it's a clone or not
     path = csv_path if is_clone else csv_non_clone_path
-    snippet_2 = transformer.apply_transformations(snippet_2, csv_file_path=path, is_clone=is_clone)
+    snippet_2,clone_status = transformer.apply_transformations(snippet_2, csv_file_path=path, is_clone=is_clone)
     
-    return snippet, snippet_2, is_clone
+    return snippet, snippet_2, clone_status
 
 def process_code_files(input_file, output_file):
     with open(input_file, 'r') as infile:

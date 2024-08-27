@@ -14,6 +14,7 @@ from transformations.simplify_if_statements import apply_randomized_if_simplific
 from transformations.simplify_complex_if_statements import simplify_conditions
 from transformations.for_to_while_loops import for_to_while_loop
 # utils
+from transformations.structure_check import contains_control_structures_or_math_operations
 from transformations.variables_vocab import get_new_variable_name
 # non clones transformations
 from transformations.non_clones.add_affecting_constants import add_non_equivalent_operations
@@ -59,7 +60,8 @@ non_clone_transformation_names = [
     "Alter Original If Block Code",
     "Blind Constant Changer",
     "Alter Loop Code",
-    "Change Math Operators"
+    "Change Math Operators",
+
 ]
 
 class CodeTransformer(ast.NodeTransformer):
@@ -99,11 +101,19 @@ class CodeTransformer(ast.NodeTransformer):
 
     def apply_self_transformations(self, source_code):
         tree = ast.parse(source_code)
-        transformed_tree = self.visit(tree)
+        if  random.uniform(0,1)>=0.5:
+
+            transformed_tree = self.visit(tree)
+        else:
+            transformed_tree=tree
+
+        
         transformed_code = astor.to_source(transformed_tree)
 
         # Ensure all variable occurrences are replaced consistently
-        transformed_code = self.replace_all_variable_occurrences(transformed_code)
+        if random.uniform(0,1)>0.5:
+            transformed_code = self.replace_all_variable_occurrences(transformed_code)
+        
         return transformed_code
 
     def replace_all_variable_occurrences(self, code):
@@ -115,9 +125,10 @@ class CodeTransformer(ast.NodeTransformer):
     def get_new_constant_value(self):
         return random.randint(0, 100)
 
-    def apply_transformations(self, code_snippet, csv_file_path, log_file_path='failed_transformations.txt',is_clone=True):
+    def apply_transformations(self, code_snippet, csv_file_path, log_file_path='failed_transformations.txt',is_clone=True)->(str,bool):
         code = code_snippet
 
+        clone_status=True
         # Apply self-transformations first
         code = self.apply_self_transformations(code)
 
@@ -138,6 +149,12 @@ class CodeTransformer(ast.NodeTransformer):
                 random_uniform = random.uniform(0, 1)  # Use uniform distribution for probability
                 if random_uniform >= 0.5:
                     try:
+                        # to make sure that the generated code is indeed a non clone
+                        if contains_control_structures_or_math_operations(code) and  not is_clone and non_clone_transformation_names[i] in  ["Alter Original If Block Code","Alter Loop Code","Change Math Operators"]:
+                            clone_status=False
+
+                        
+
                         code = transformation(code)
                         transformation_record[i] = 1  # Mark the transformation as applied
                     except Exception as e:
@@ -150,4 +167,4 @@ class CodeTransformer(ast.NodeTransformer):
             writer = csv.writer(csv_file)
             writer.writerow(transformation_record)
 
-        return code
+        return (code,clone_status)
