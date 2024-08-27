@@ -14,7 +14,7 @@ from transformations.simplify_if_statements import apply_randomized_if_simplific
 from transformations.simplify_complex_if_statements import simplify_conditions
 from transformations.for_to_while_loops import for_to_while_loop
 # utils
-from transformations.structure_check import contains_control_structures_or_math_operations
+from transformations.structure_check import contains_if_statements,contains_loops,contains_math_operations
 from transformations.variables_vocab import get_new_variable_name
 # non clones transformations
 from transformations.non_clones.add_affecting_constants import add_non_equivalent_operations
@@ -150,10 +150,11 @@ class CodeTransformer(ast.NodeTransformer):
                 if random_uniform >= 0.5:
                     try:
                         # to make sure that the generated code is indeed a non clone
-                        if contains_control_structures_or_math_operations(code) and  not is_clone and non_clone_transformation_names[i] in  ["Alter Original If Block Code","Alter Loop Code","Change Math Operators"]:
-                            clone_status=False
-
-                        
+                        if not is_clone:
+                            if non_clone_transformation_names[i]=='Alter Original If Block Code' and contains_if_statements(code) \
+                            or non_clone_transformation_names[i]=='Alter Loop Code' and contains_loops(code)\
+                            or non_clone_transformation_names[i]=='Change Math Operators' and contains_math_operations(code):
+                                clone_status=False
 
                         code = transformation(code)
                         transformation_record[i] = 1  # Mark the transformation as applied

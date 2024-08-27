@@ -1,9 +1,10 @@
-
-import ast,astor,random
+import ast
+import astor
+import random
 from tinypy_generator import CodeGenerator
 
+LEVELS = ["1.1", "1.2", "2.1", "2.2", "3.1", "3.2"]
 
-LEVELS=["1.1", "1.2", "2.1", "2.2", "3.1", "3.2"]
 class IfTransformer(ast.NodeTransformer):
     def __init__(self):
         pass
@@ -13,14 +14,15 @@ class IfTransformer(ast.NodeTransformer):
         if random.choice([True, False]):
             # Replace the code block with a random code snippet
             if node.body:
-                root,random_code = CodeGenerator().generate_program(random.choice(LEVELS))
+                root, random_code = CodeGenerator().generate_program(random.choice(LEVELS))
                 node.body = ast.parse(random_code).body
             if node.orelse:
-                root,random_code = CodeGenerator().generate_program(random.choice(LEVELS))
+                root, random_code = CodeGenerator().generate_program(random.choice(LEVELS))
                 node.orelse = ast.parse(random_code).body
         else:
             # Remove the entire if statement
-            node.body=ast.parse(CodeGenerator().generate_program(random.choice(LEVELS))).body
+            root, random_code = CodeGenerator().generate_program(random.choice(LEVELS))
+            node.body = ast.parse(random_code).body
             
         return node
 
