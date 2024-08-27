@@ -10,8 +10,16 @@ LEVEL=$2
 FILENAME="level${LEVEL}.txt"
 
 # Run the Python scripts
-rm *.txt
+rm  *.txt
 rm *.csv
 
 python tinypy_generator.py --level $LEVEL --filename $FILENAME
 python main.py --input $FILENAME
+
+rm data/$FILENAME/*.txt
+python preparation.py --source "clones_${FILENAME}"
+ 
+mv clone_count.txt data/"clones_${FILENAME}"/clone_count.txt
+rm *.txt
+mv meta_clone.csv data/"clones_${FILENAME}"/meta_clone.csv
+mv meta_non_clones.csv data/"clones_${FILENAME}"/meta_non_clones.csv

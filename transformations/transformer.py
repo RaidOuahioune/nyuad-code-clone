@@ -164,6 +164,7 @@ class CodeTransformer(ast.NodeTransformer):
                         log_file.write(f"Error in transformation:\n{code}\nException: {str(e)}\nStack Trace:\n{stack_trace}\n\n")
 
         # Write the transformation record to the CSV file
+        
         with open(csv_file_path, 'a', newline='') as csv_file:
             writer = csv.writer(csv_file)
             writer.writerow(transformation_record)

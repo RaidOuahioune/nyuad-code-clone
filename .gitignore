@@ -3,7 +3,7 @@
 *.pkl
 *.bin
 *.pyc
-preparation.py
+
 
 *.pth
 __pycache__/
